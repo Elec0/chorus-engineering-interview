@@ -5,7 +5,7 @@
   "scripts": {
     "pokemon-ui:serve": "nx run pokemon-ui:serve",
     "pokemon-user-backend:serve": "nx run pokemon-user-backend:serve",
-    "start": "concurrently --kill-others \"pnpm pokemon-ui:serve\" \"pnpm pokemon-user-backend:serve\""
+    "start": "concurrently --kill-others \"pnpm run pokemon-ui:serve\" \"pnpm run pokemon-user-backend:serve\""
   },
   "private": true,
   "dependencies": {
