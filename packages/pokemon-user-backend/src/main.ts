@@ -8,6 +8,7 @@ import { NestFactory } from '@nestjs/core';
 
 import { startDatabase } from './modules/database/db';
 import { AppModule } from './modules/app/app.module';
+import { StartupService } from "./modules/startup.service";
 
 async function bootstrap() {
   process.on('uncaughtException', (error) => {
@@ -28,6 +29,9 @@ async function bootstrap() {
   Logger.log(
     `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
   );
+
+  const startupService = app.get(StartupService);
+  startupService.runOnStartup();
 }
 
 bootstrap();

@@ -12,21 +12,21 @@ export class PokemonService {
 
   async findAll(): Promise<Pokemon[]> {
     // Temporary static data
-    return [
-      {
-        id: 1, name: 'Bulbasaur',
-        type: "grass"
-      },
-      {
-        id: 2, name: 'Ivysaur',
-        type: "grass"
-      },
-      {
-        id: 3, name: 'Venusaur',
-        type: "grass"
-      },
-    ];
-    // return this.pokemonRepository.find();
+    // return [
+    //   {
+    //     id: 1, name: 'Bulbasaur',
+    //     type: "grass"
+    //   },
+    //   {
+    //     id: 2, name: 'Ivysaur',
+    //     type: "grass"
+    //   },
+    //   {
+    //     id: 3, name: 'Venusaur',
+    //     type: "grass"
+    //   },
+    // ];
+    return this.pokemonRepository.find();
   }
 
   async create(pokemonData: Partial<Pokemon>): Promise<Pokemon> {
