@@ -18,6 +18,9 @@ async function bootstrap() {
   await startDatabase();
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
+  app.enableCors({
+    origin: 'http://localhost:4200',
+  });
   app.setGlobalPrefix(globalPrefix);
   const port = 3000;
   // const port = process.env.PORT || 3000;
