@@ -2,8 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { fetchPokemon } from '../services/api';
 import PokemonCard from './PokemonCard';
 import { Pokemon } from "../services/types";
+import '../assets/styles.css';
 
-const PokemonList = () => {
+interface PokemonListProps {
+  onPokemonSelect: (pokemon: Pokemon) => void;
+}
+
+const PokemonList: React.FC<PokemonListProps> = ({ onPokemonSelect }) => {
   const [pokemon, setPokemon] = useState<Pokemon[]>([]);
 
   useEffect(() => {
@@ -15,13 +20,15 @@ const PokemonList = () => {
       <h2>Pokémon List</h2>
       <div className="pokemon-list">
         {pokemon.map(p => (
-          <PokemonCard
-            key={p.id}
-            id={p.id}
-            name={p.name}
-            types={p.types}
-            image={p.image}
-          />
+          <div key={p.id} onClick={() => onPokemonSelect(p)}>
+            <PokemonCard
+              key={p.id}
+              id={p.id}
+              name={p.name}
+              types={p.types}
+              image={p.image}
+            />
+          </div>
         ))}
       </div>
     </div>

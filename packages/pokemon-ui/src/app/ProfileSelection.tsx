@@ -1,17 +1,24 @@
-// packages/pokemon-ui/src/app/ProfileSelection.tsx
 import React, { useEffect, useState } from 'react';
-import './ProfileSelection.css';
-import { fetchProfiles, createProfile, deleteProfile } from '../services/api';
-import { Profile } from "../services/types";
+import { fetchProfiles, createProfile, deleteProfile, fetchProfilePokemon } from '../services/api';
+import { Profile, Pokemon } from "../services/types";
+import TeamBuilder from './TeamBuilder';
+import '../assets/styles.css';
 
 const ProfileSelection = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [selectedProfile, setSelectedProfile] = useState<number | null>(null);
   const [newProfileName, setNewProfileName] = useState<string>('');
+  const [profilePokemon, setProfilePokemon] = useState<Pokemon[]>([]);
 
   useEffect(() => {
     fetchProfiles().then(data => setProfiles(data));
   }, []);
+
+  useEffect(() => {
+    if (selectedProfile !== null) {
+      fetchProfilePokemon(selectedProfile).then(data => setProfilePokemon(data));
+    }
+  }, [selectedProfile]);
 
   const handleProfileChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedProfile(Number(event.target.value));
@@ -31,6 +38,7 @@ const ProfileSelection = () => {
       setProfiles(profiles.filter(profile => profile.id !== id));
       if (selectedProfile === id) {
         setSelectedProfile(null);
+        setProfilePokemon([]);
       }
     });
   };
@@ -55,9 +63,12 @@ const ProfileSelection = () => {
         />
         <button onClick={handleCreateProfile}>Create Profile</button>
         {selectedProfile && (
-          <button onClick={() => handleDeleteProfile(selectedProfile)}>Delete Profile</button>
+          <button onClick={(  ) => handleDeleteProfile(selectedProfile)}>Delete Profile</button>
         )}
       </div>
+      {selectedProfile && (
+        <TeamBuilder profileId={selectedProfile} profilePokemon={profilePokemon} setProfilePokemon={setProfilePokemon} />
+      )}
     </div>
   );
 };

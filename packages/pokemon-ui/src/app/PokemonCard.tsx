@@ -1,5 +1,5 @@
 import React from 'react';
-import "./PokemonCard.css";
+import '../assets/styles.css';
 
 interface PokemonCardProps {
   id: number;
