@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreatePokemonDto } from './pokemon.interface';
 import { Pokemon } from "../database/entities/pokemon.entity";
 
@@ -17,6 +17,15 @@ export class PokemonService {
 
   async findByName(name: string): Promise<Pokemon | undefined> {
     return this.pokemonRepository.findOne({ where: { name } });
+  }
+
+  /**
+   * Retrieve full pokemon data for the provided IDs.
+   * @param ids Pokemon ID numbers
+   * @returns 
+   */
+  async findByIds(ids: number[]): Promise<Pokemon[]> {
+    return this.pokemonRepository.find({ where: { id: In(ids)} });
   }
 
   async create(createPokemonDto: CreatePokemonDto): Promise<Pokemon> {
