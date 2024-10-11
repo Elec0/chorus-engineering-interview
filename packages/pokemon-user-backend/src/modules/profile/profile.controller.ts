@@ -6,6 +6,7 @@ import {
   Put,
   Get,
   Delete,
+  Logger,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
@@ -20,6 +21,8 @@ import { CreateProfileDto } from './dto/create-profile.dto';
  */
 @Controller('profiles')
 export class ProfileController {
+  private readonly logger = new Logger(ProfileController.name);
+
   constructor(private readonly profileService: ProfileService) {}
 
   @Get()
@@ -29,16 +32,19 @@ export class ProfileController {
 
   @Post()
   create(@Body() createProfileDto: CreateProfileDto) {
+    this.logger.debug(`Creating profile with name: ${createProfileDto.name}`);
     return this.profileService.create(createProfileDto);
   }
 
   @Put(':id/pokemon')
   assignPokemon(@Param('id') id: number, @Body() pokemonIds: number[]) {
+    this.logger.debug(`Assigning to profile (${id}): ${pokemonIds}`);
     return this.profileService.assignPokemon(id, pokemonIds);
   }
 
   @Delete(':id')
   delete(@Param('id') id: number) {
+    this.logger.debug(`Deleting profile with ID: ${id}`);
     return this.profileService.delete(id);
   }
 }
