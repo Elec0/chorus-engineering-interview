@@ -1,13 +1,12 @@
-// packages/pokemon-ui/src/app/app.tsx
 import React from 'react';
 import PokemonList from "./PokemonList";
-// import ProfileSelection from "./ProfileSelection";
-// import TeamBuilder from "./TeamBuilder";
+import ProfileSelection from "./ProfileSelection";
+import "./app.css";
 
 export function App() {
   return (
-    <div>
-      {/* <ProfileSelection /> */}
+    <div className="app-container">
+      <ProfileSelection />
       <PokemonList />
       {/* <TeamBuilder /> */}
     </div>
