@@ -3,5 +3,11 @@ export const fetchPokemon = async () => {
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
-  return response.json();
+  const data = await response.json();
+  return data.map((pokemon: any) => ({
+    id: pokemon.id,
+    name: pokemon.name,
+    types: pokemon.types,
+    image: pokemon?.imageUrl, // Assuming the backend returns an imageUrl field
+  }));
 };
