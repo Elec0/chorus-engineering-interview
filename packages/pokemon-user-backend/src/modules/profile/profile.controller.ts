@@ -24,7 +24,7 @@ export class ProfileController {
 
   @Get()
   findAll() {
-    return this.profileService.findAll();
+    return this.profileService.findAll() ?? {};
   }
 
   @Post()

@@ -9,5 +9,6 @@ import { PokemonModule } from "../pokemon/pokemon.module";
   imports: [TypeOrmModule.forFeature([Profile]), PokemonModule],
   providers: [ProfileService],
   controllers: [ProfileController],
+  exports: [TypeOrmModule],
 })
 export class ProfileModule {}
