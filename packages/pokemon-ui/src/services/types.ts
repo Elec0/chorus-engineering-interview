@@ -8,4 +8,5 @@ export interface Pokemon {
 export interface Profile {
     id: number;
     name: string;
+    pokemon: Pokemon[];
   }
