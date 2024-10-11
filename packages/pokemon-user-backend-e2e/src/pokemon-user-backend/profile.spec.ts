@@ -9,6 +9,77 @@ describe('GET /api/profiles', () => {
     expect(res.status).toBe(200);
     // expect(res.data.length).toBeGreaterThan(0);
   });
+
+  describe('GET /api/profiles/:id', () => {
+    it('should return a specific profile', async () => {
+      // Create a new profile
+      const createRes = await axios.post(`/api/profiles`, {
+        name: 'Ash Ketchum',
+      });
+
+      expect(createRes.status).toBe(201);
+      expect(createRes.data.name).toBe('Ash Ketchum');
+
+      // Get the profile by ID
+      const res = await axios.get(`/api/profiles/${createRes.data.id}`);
+
+      expect(res.status).toBe(200);
+      expect(res.data.name).toBe('Ash Ketchum');
+
+      // Delete the profile
+      const deleteRes = await axios.delete(`/api/profiles/${createRes.data.id}`);
+
+      expect(deleteRes.status).toBe(200);
+    });
+
+    it('should return a 404 for a profile that does not exist', async () => {
+      let res = null;
+      try {
+        res = await axios.get(`/api/profiles/99999999`);
+      } catch (error) {
+        res = error.response;
+      } finally {
+        expect(res.status).toBe(404);
+      }
+    });
+
+    describe('GET /api/profiles/:id/pokemon', () => {
+      it('should return all Pokémon associated with a profile', async () => {
+        // Create a new profile
+        const createRes = await axios.post(`/api/profiles`, {
+          name: 'Ash Ketchum',
+        });
+
+        expect(createRes.status).toBe(201);
+        expect(createRes.data.name).toBe('Ash Ketchum');
+
+        // Get all Pokémon associated with the profile
+        const pokemonRes = await axios.get(
+          `/api/profiles/${createRes.data.id}/pokemon`
+        );
+
+        expect(pokemonRes.status).toBe(200);
+        expect(pokemonRes.data.length).toBe(0);
+
+        // Delete the profile
+        const deleteRes = await axios.delete(`/api/profiles/${createRes.data.id}`);
+
+        expect(deleteRes.status).toBe(200);
+      });
+
+      it('should return a 404 for a profile that does not exist', async () => {
+        let res = null;
+        try {
+          res = await axios.get(`/api/profiles/99999999/pokemon`);
+        } catch (error) {
+          res = error.response;
+        } finally {
+          expect(res).not.toBeNull();
+          expect(res.status).toBe(404);
+        }
+      });
+    });
+  });
 });
 
 describe('POST /api/profiles', () => {
