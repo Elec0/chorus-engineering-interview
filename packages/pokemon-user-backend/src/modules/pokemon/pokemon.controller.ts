@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { PokemonService } from './pokemon.service';
 
 /**
@@ -16,9 +16,11 @@ export class PokemonController {
   /** 
    * Get pokemon data for the provided IDs. 
    * @param ids Comma-separated list of Pokemon IDs
+   * @returns Array of Pokemon objects
    */
   @Get(':ids')
-  findByIds(ids: string) {
+  findByIds(@Param('ids') ids: string) {
+    // TODO: Malformed input handling
     const idList = ids.split(',').map((id) => parseInt(id, 10));
     return this.pokemonService.findByIds(idList);
   }
