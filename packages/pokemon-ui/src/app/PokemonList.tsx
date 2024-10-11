@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchPokemon } from '../services/api';
 import PokemonCard from './PokemonCard';
-
-interface Pokemon {
-  id: number;
-  name: string;
-  types: string[];
-  image: string;
-}
+import { Pokemon } from "../services/types";
 
 const PokemonList = () => {
   const [pokemon, setPokemon] = useState<Pokemon[]>([]);
