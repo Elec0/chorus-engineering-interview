@@ -1,0 +1,25 @@
+.profile-selection {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.profile-selection select {
+  padding: 8px;
+  font-size: 16px;
+}
+
+.profile-actions {
+  margin-top: 20px;
+}
+
+.profile-actions input {
+  padding: 8px;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.profile-actions button {
+  padding: 8px 16px;
+  font-size: 16px;
+  margin-right: 10px;
+}
