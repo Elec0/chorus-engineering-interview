@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CreatePokemonDto } from './pokemon.interface';
 import { Pokemon } from "../database/entities/pokemon.entity";
 
 @Injectable()
@@ -11,26 +12,19 @@ export class PokemonService {
   ) {}
 
   async findAll(): Promise<Pokemon[]> {
-    // Temporary static data
-    // return [
-    //   {
-    //     id: 1, name: 'Bulbasaur',
-    //     type: "grass"
-    //   },
-    //   {
-    //     id: 2, name: 'Ivysaur',
-    //     type: "grass"
-    //   },
-    //   {
-    //     id: 3, name: 'Venusaur',
-    //     type: "grass"
-    //   },
-    // ];
     return this.pokemonRepository.find();
   }
 
-  async create(pokemonData: Partial<Pokemon>): Promise<Pokemon> {
-    const pokemon = this.pokemonRepository.create(pokemonData);
-    return this.pokemonRepository.save(pokemon);
+  async findByName(name: string): Promise<Pokemon | undefined> {
+    return this.pokemonRepository.findOne({ where: { name } });
+  }
+
+  async create(createPokemonDto: CreatePokemonDto): Promise<Pokemon> {
+    const newPokemon = this.pokemonRepository.create(createPokemonDto);
+    return this.pokemonRepository.save(newPokemon);
+  }
+
+  async count(): Promise<number> {
+    return this.pokemonRepository.count();
   }
 }
