@@ -30,6 +30,21 @@ export class ProfileController {
     return this.profileService.findAll() ?? {};
   }
 
+  @Get(':id')
+  findOne(@Param('id') id: number) {
+    return this.profileService.findOne(id);
+  }
+
+  /**
+   * 
+   * @param id Profile ID
+   * @returns Array of `Pokemon` objects associated with the profile
+   */
+  @Get(':id/pokemon')
+  findProfilePokemon(@Param('id') id: number) {
+    return this.profileService.findProfilePokemon(id);
+  }
+
   @Post()
   create(@Body() createProfileDto: CreateProfileDto) {
     this.logger.debug(`Creating profile with name: ${createProfileDto.name}`);

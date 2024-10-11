@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Profile } from '../database/entities/profile.entity';
 import { Pokemon } from '../database/entities/pokemon.entity';
 import { CreateProfileDto } from './dto/create-profile.dto';
+import { PokemonService } from '../pokemon/pokemon.service';
 
 /**
  * Business logic for the Profile module.
@@ -14,12 +15,41 @@ export class ProfileService {
     @InjectRepository(Profile)
     private readonly profileRepository: Repository<Profile>,
     @InjectRepository(Pokemon)
-    private readonly pokemonRepository: Repository<Pokemon>
+    private readonly pokemonRepository: Repository<Pokemon>,
+    private readonly pokemonService: PokemonService
   ) {}
+
+  /**
+   * Find all the pokemon associated with a profile by the profile's ID.
+   *
+   * This method retrieves a profile by its ID and then returns the list of Pokémon associated with that profile.
+   * @param profileId
+   * @returns the full pokemon objects for each of the Pokémon IDs associated with the profile.
+   */
+  async findProfilePokemon(profileId: number): Promise<Pokemon[]> {
+    const profile = await this.profileRepository.findOne({
+      where: { id: profileId },
+      relations: ['pokemon'],
+    });
+    if (!profile) {
+      throw new NotFoundException('Profile not found');
+    }
+    const pokemonIds = profile.pokemon.map((p) => p.id);
+    return this.pokemonService.findByIds(pokemonIds);
+  }
 
   /** Get all of the profiles in the database. */
   async findAll(): Promise<Profile[]> {
     return this.profileRepository.find();
+  }
+
+  /** Get a profile by ID. */
+  async findOne(id: number): Promise<Profile> {
+    const profile = await this.profileRepository.findOne({ where: { id } });
+    if (!profile) {
+      throw new NotFoundException(`Profile with ID ${id} not found`);
+    }
+    return profile;
   }
 
   /** Create a new profile by name. */
@@ -33,14 +63,14 @@ export class ProfileService {
     await this.profileRepository.delete(id);
   }
 
-/**
- * Assigns a list of Pokémon to an existing profile.
- *
- * @param profileId - The ID of the profile to which Pokémon will be assigned.
- * @param pokemonIds - An array of Pokémon IDs to be assigned to the profile.
- * @returns A promise that resolves to the updated Profile object.
- * @throws Will throw an error if the profile is not found.
- */
+  /**
+   * Assigns a list of Pokémon to an existing profile.
+   *
+   * @param profileId - The ID of the profile to which Pokémon will be assigned.
+   * @param pokemonIds - An array of Pokémon IDs to be assigned to the profile.
+   * @returns A promise that resolves to the updated Profile object.
+   * @throws Will throw an error if the profile is not found.
+   */
   async assignPokemon(
     profileId: number,
     pokemonIds: number[]
@@ -51,9 +81,9 @@ export class ProfileService {
     });
 
     if (!profile) {
-      throw new Error('Profile not found');
+      throw new NotFoundException('Profile not found');
     }
-    
+
     const pokemon = await this.pokemonRepository.findBy({ id: In(pokemonIds) });
     profile.pokemon = pokemon;
     return this.profileRepository.save(profile);
