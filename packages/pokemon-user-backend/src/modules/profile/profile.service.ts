@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Pokemon } from '../database/entities/pokemon.entity';
@@ -11,6 +11,8 @@ import { CreateProfileDto } from './dto/create-profile.dto';
  */
 @Injectable()
 export class ProfileService {
+  private readonly logger = new Logger(ProfileService.name);
+  
   constructor(
     @InjectRepository(Profile)
     private readonly profileRepository: Repository<Profile>,
@@ -32,6 +34,7 @@ export class ProfileService {
       relations: ['pokemon'],
     });
     if (!profile) {
+      this.logger.error(`Profile with ID ${profileId} not found`);
       throw new NotFoundException('Profile not found');
     }
     const pokemonIds = profile.pokemon.map((p) => p.id);
@@ -47,6 +50,7 @@ export class ProfileService {
   async findOne(id: number): Promise<Profile> {
     const profile = await this.profileRepository.findOne({ where: { id } });
     if (!profile) {
+      this.logger.error(`Profile with ID ${id} not found`);
       throw new NotFoundException(`Profile with ID ${id} not found`);
     }
     return profile;
@@ -81,15 +85,17 @@ export class ProfileService {
     });
 
     if (!profile) {
+      this.logger.error(`Profile with ID ${profileId} not found`);
       throw new NotFoundException('Profile not found');
     }
 
-    if (profile.pokemon.length + pokemonIds.length > 6) {
+    if (pokemonIds.length > 6) {
+      this.logger.error('Cannot assign more than 6 Pokémon to a profile');
       throw new BadRequestException('Cannot assign more than 6 Pokémon to a profile');
     }
     
-    const pokemon = await this.pokemonRepository.findByIds(pokemonIds);
-    profile.pokemon = [...profile.pokemon, ...pokemon];
+    const pokemon = await this.pokemonService.findByIds(pokemonIds);
+    profile.pokemon = pokemon
     return this.profileRepository.save(profile);
   }
 }

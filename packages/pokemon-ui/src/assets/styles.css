@@ -30,6 +30,11 @@
   background-color: darkred;
 }
 
+.error-message {
+    color: red;
+    margin-bottom: 10px;
+  }
+
 /* Styles for PokemonCard */
 .pokemon-card {
   border: 1px solid #ccc;

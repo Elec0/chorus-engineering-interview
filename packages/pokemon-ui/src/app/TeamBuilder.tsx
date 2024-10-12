@@ -12,26 +12,46 @@ interface TeamBuilderProps {
 }
 
 const TeamBuilder: React.FC<TeamBuilderProps> = ({ profileId, profilePokemon, setProfilePokemon }) => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const addPokemonToProfile = (pokemon: Pokemon) => {
-    if (profilePokemon.length < 6 && !profilePokemon.some(p => p.id === pokemon.id)) {
-      const updatedPokemon = [...profilePokemon, pokemon];
-      assignPokemonToProfile(profileId, updatedPokemon.map(p => p.id)).then(() => {
-        setProfilePokemon(updatedPokemon);
-      });
+    // Guard conditions
+    if (profilePokemon.length >= 6) {
+      setErrorMessage('Cannot add more than 6 Pokémon to the profile.');
+      return;
     }
+    if (profilePokemon.some(p => p.id === pokemon.id)) {
+      setErrorMessage('Pokémon is already in the profile.');
+      return;
+    }
+    
+    const updatedPokemon = [...profilePokemon, pokemon];
+    assignPokemonToProfile(profileId, updatedPokemon.map(p => p.id))
+    .then(() => {
+      setProfilePokemon(updatedPokemon);
+      setErrorMessage(null);
+    })
+    .catch((error) => {
+      setErrorMessage(error.response?.data?.message || 'Failed to add Pokémon to profile.');
+    });
   };
 
   const removePokemonFromProfile = (pokemonId: number) => {
     const updatedPokemon = profilePokemon.filter(p => p.id !== pokemonId);
-    assignPokemonToProfile(profileId, updatedPokemon.map(p => p.id)).then(() => {
+    assignPokemonToProfile(profileId, updatedPokemon.map(p => p.id))
+    .then(() => {
       setProfilePokemon(updatedPokemon);
+      setErrorMessage(null);
+    }).catch((error) => {
+      setErrorMessage(error.response?.data?.message || 'Failed to add Pokémon to profile.');
     });
   };
 
   return (
     <div className="team-builder">
       <h2>Build Your Team</h2>
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
+
       <h3>Selected Pokémon</h3>
       <div className="pokemon-list">
         {profilePokemon.map(p => (
