@@ -214,9 +214,10 @@ describe('PUT /api/profiles/:id/pokemon', () => {
     // Try to assign a 7th Pokémon to the profile
     let assign7thRes = null;
     try {
-      assign7thRes = await axios.put(`/api/profiles/${createRes.data.id}/pokemon`, [
-        pokemonRes.data[6].id,
-      ]);
+      assign7thRes = await axios.put(
+        `/api/profiles/${createRes.data.id}/pokemon`,
+        [...pokemonIds, pokemonRes.data[6].id]
+      );
     } catch (error) {
       assign7thRes = error.response;
     } finally {
