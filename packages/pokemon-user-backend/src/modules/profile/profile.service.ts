@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
-import { Profile } from '../database/entities/profile.entity';
+import { Repository } from 'typeorm';
 import { Pokemon } from '../database/entities/pokemon.entity';
-import { CreateProfileDto } from './dto/create-profile.dto';
+import { Profile } from '../database/entities/profile.entity';
 import { PokemonService } from '../pokemon/pokemon.service';
+import { CreateProfileDto } from './dto/create-profile.dto';
 
 /**
  * Business logic for the Profile module.
@@ -84,8 +84,12 @@ export class ProfileService {
       throw new NotFoundException('Profile not found');
     }
 
-    const pokemon = await this.pokemonRepository.findBy({ id: In(pokemonIds) });
-    profile.pokemon = pokemon;
+    if (profile.pokemon.length + pokemonIds.length > 6) {
+      throw new BadRequestException('Cannot assign more than 6 Pokémon to a profile');
+    }
+    
+    const pokemon = await this.pokemonRepository.findByIds(pokemonIds);
+    profile.pokemon = [...profile.pokemon, ...pokemon];
     return this.profileRepository.save(profile);
   }
 }

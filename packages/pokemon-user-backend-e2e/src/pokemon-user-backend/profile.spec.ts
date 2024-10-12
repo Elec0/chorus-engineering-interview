@@ -27,7 +27,9 @@ describe('GET /api/profiles', () => {
       expect(res.data.name).toBe('Ash Ketchum');
 
       // Delete the profile
-      const deleteRes = await axios.delete(`/api/profiles/${createRes.data.id}`);
+      const deleteRes = await axios.delete(
+        `/api/profiles/${createRes.data.id}`
+      );
 
       expect(deleteRes.status).toBe(200);
     });
@@ -62,7 +64,9 @@ describe('GET /api/profiles', () => {
         expect(pokemonRes.data.length).toBe(0);
 
         // Delete the profile
-        const deleteRes = await axios.delete(`/api/profiles/${createRes.data.id}`);
+        const deleteRes = await axios.delete(
+          `/api/profiles/${createRes.data.id}`
+        );
 
         expect(deleteRes.status).toBe(200);
       });
@@ -175,6 +179,51 @@ describe('PUT /api/profiles/:id/pokemon', () => {
 
     expect(removeRes.status).toBe(200);
     expect(removeRes.data.pokemon.length).toBe(2);
+
+    // Delete the profile
+    const deleteRes = await axios.delete(`/api/profiles/${createRes.data.id}`);
+
+    expect(deleteRes.status).toBe(200);
+  });
+
+  it('should not allow more than 6 Pokémon to be assigned to a profile', async () => {
+    // Create a new profile
+    const createRes = await axios.post(`/api/profiles`, {
+      name: 'Test Profile',
+    });
+
+    expect(createRes.status).toBe(201);
+    expect(createRes.data.name).toBe('Test Profile');
+
+    // Get all Pokémon
+    const pokemonRes = await axios.get(`/api/pokemon`);
+
+    expect(pokemonRes.status).toBe(200);
+    expect(pokemonRes.data.length).toBeGreaterThan(0);
+
+    // Assign the first 6 Pokémon to the new profile
+    const pokemonIds = pokemonRes.data.slice(0, 6).map((pokemon) => pokemon.id);
+    const assignRes = await axios.put(
+      `/api/profiles/${createRes.data.id}/pokemon`,
+      pokemonIds
+    );
+
+    expect(assignRes.status).toBe(200);
+    expect(assignRes.data.pokemon.length).toBe(6);
+
+    // Try to assign a 7th Pokémon to the profile
+    let assign7thRes = null;
+    try {
+      assign7thRes = await axios.put(`/api/profiles/${createRes.data.id}/pokemon`, [
+        pokemonRes.data[6].id,
+      ]);
+    } catch (error) {
+      assign7thRes = error.response;
+    } finally {
+      console.log(`assign7thRes: ${assign7thRes.status}`);
+      expect(assign7thRes.status).not.toBe(200);
+      expect(assign7thRes.status).not.toBe(201);
+    }
 
     // Delete the profile
     const deleteRes = await axios.delete(`/api/profiles/${createRes.data.id}`);
