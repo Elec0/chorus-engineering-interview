@@ -3,6 +3,7 @@ export interface Pokemon {
   name: string;
   types: string[];
   image: string;
+  description?: string;
 }
 
 export interface Profile {
